@@ -36,31 +36,31 @@ _HINT : Record names and keys_
 
 1. Create a resource group
 2. Create a storage account (refer to this one as INIT)
-  1. Create a container &quot;images&quot;
-  2. Create a container &quot;export&quot;
+  * Create a container &quot;images&quot;
+  * Create a container &quot;export&quot;
 3. Create a function app (put &quot;App&quot; in the name)
-  1. For your tollbooth events, consumption plan, Javascript runtime stack
-  2. Create new storage and disable application insights
+  * For your tollbooth app, consumption plan, .NET runtime stack
+  * Create new storage and disable application insights
 4. Create a function app (put &quot;Events&quot; in the name)
-  1. For your tollbooth events, consumption plan, Javascript runtime stack
-  2. Create new storage and disable application insights
+  * For your tollbooth events, consumption plan, Javascript runtime stack
+  * Create new storage and disable application insights
 5. Create an Event Grid Topic (leave schema as Event Grid Schema)
 6. Create an Azure Cosmos DB account
-  1. API : Core (SQL)
-  2. Disable Geo-redundency and multi-region writes
-  3. Create a collection
-    1. Database ID &quot;LicensePlates&quot;
-    2. Leave **Provision database throughput** unchecked.
-    3. Collection ID &quot;Processed&quot;
-    4. Partition key **: &quot;**** /licensePlateText&quot;**
-    5. 5000 throughput
-  4. Create a collection
-    1. Database ID &quot;LicensePlates&quot;
-    2. Leave **Provision database throughput** unchecked.
-    3. Collection ID &quot;NeedsManualReview&quot;
-    4. Partition key **: &quot;**** /fileName&quot;**
-    5. 5000 throughput
-  5. _Hint : copy the_ _read-write keys_ _for URI and Primary Key_
+  * API : Core (SQL)
+  * Disable Geo-redundency and multi-region writes
+  * Create a collection
+    * Database ID &quot;LicensePlates&quot;
+    * Leave **Provision database throughput** unchecked.
+    * Collection ID &quot;Processed&quot;
+    * Partition key **: &quot;**** /licensePlateText&quot;**
+    * 5000 throughput
+  * Create a collection
+    * Database ID &quot;LicensePlates&quot;
+    * Leave **Provision database throughput** unchecked.
+    * Collection ID &quot;NeedsManualReview&quot;
+    * Partition key **: &quot;**** /fileName&quot;**
+    * 5000 throughput
+  * _Hint : copy the_ _read-write keys_ _for URI and Primary Key_
 7. Create a Computer Vision API service (S1 pricing tier)
 
 
@@ -84,20 +84,20 @@ Use Visual Studio 2017 and its integrated Azure Functions tooling to develop and
 | exportCsvContainerName | Blob storage CSV export container name (export) |
 | blobStorageConnection | Blob storage connection string |
 
-1. Open the Tollbooth solution.
+2. Open the Tollbooth solution.
 
 _There is a completed version and one with TODOs. If you are running out of time, open  the solution in the &quot;Completed&quot; folder and skip to Challenge 3_
 
-1. Open the task list
-2. Open ProcessImage.cs. Notice that the Run method is decorated with the FunctionName attribute, which sets the name of the Azure Function to &quot;ProcessImage&quot;. This is triggered by HTTP requests sent to it from the Event Grid service. You tell Event Grid that you want to get these notifications at your function&#39;s URL by creating an event subscription, which you will do in a later task, in which you subscribe to blob-created events. The function&#39;s trigger watches for new blobs being added to the images container of the storage account that was created in Exercise 1. The data passed to the function from the Event Grid notification includes the URL of the blob. That URL is in turn passed to the input binding to obtain the uploaded image from Blob storage.
-3. The following code represents the completed task in ProcessImage.cs:
+3. Open the task list
+4. Open ProcessImage.cs. Notice that the Run method is decorated with the FunctionName attribute, which sets the name of the Azure Function to &quot;ProcessImage&quot;. This is triggered by HTTP requests sent to it from the Event Grid service. You tell Event Grid that you want to get these notifications at your function&#39;s URL by creating an event subscription, which you will do in a later task, in which you subscribe to blob-created events. The function&#39;s trigger watches for new blobs being added to the images container of the storage account that was created in Exercise 1. The data passed to the function from the Event Grid notification includes the URL of the blob. That URL is in turn passed to the input binding to obtain the uploaded image from Blob storage.
+5. The following code represents the completed task in ProcessImage.cs:
 
 // \*\*TODO 1: Set the licensePlateText value by awaiting a new FindLicensePlateText.GetLicensePlate method.\*\*
 
 licensePlateText =awaitnewFindLicensePlateText(log, \_client).GetLicensePlate(licensePlateImage);
 
-1. Open FindLicensePlateText.cs. This class is responsible for contacting the Computer Vision API to find and extract the license plate text from the photo, using OCR. Notice that this class also shows how you can implement a resilience pattern using Polly, an open source .NET library that helps you handle transient errors. This is useful for ensuring that you do not overload downstream services, in this case, the Computer Vision API. This will be demonstrated later on when visualizing the Function&#39;s scalability.
-2. The following code represents the completed task in FindLicensePlateText.cs:
+6. Open FindLicensePlateText.cs. This class is responsible for contacting the Computer Vision API to find and extract the license plate text from the photo, using OCR. Notice that this class also shows how you can implement a resilience pattern using Polly, an open source .NET library that helps you handle transient errors. This is useful for ensuring that you do not overload downstream services, in this case, the Computer Vision API. This will be demonstrated later on when visualizing the Function&#39;s scalability.
+7. The following code represents the completed task in FindLicensePlateText.cs:
 
 // TODO 2: Populate the below two variables with the correct AppSettings properties.
 
@@ -105,8 +105,8 @@ var uriBase = Environment.GetEnvironmentVariable(&quot;computerVisionApiUrl&quot
 
 var apiKey = Environment.GetEnvironmentVariable(&quot;computerVisionApiKey&quot;);
 
-1. Open SendToEventGrid.cs. This class is responsible for sending an Event to the Event Grid topic, including the event type and license plate data. Event listeners will use the event type to filter and act on the events they need to process. Make note of the event types defined here (the first parameter passed into the Send method), as they will be used later on when creating new functions in the second Function App you provisioned earlier.
-2. The following code represents the completed tasks in SendToEventGrid.cs:
+8. Open SendToEventGrid.cs. This class is responsible for sending an Event to the Event Grid topic, including the event type and license plate data. Event listeners will use the event type to filter and act on the events they need to process. Make note of the event types defined here (the first parameter passed into the Send method), as they will be used later on when creating new functions in the second Function App you provisioned earlier.
+9. The following code represents the completed tasks in SendToEventGrid.cs:
 
 // TODO 3: Modify send method to include the proper eventType name value for saving plate data.
 
@@ -122,12 +122,12 @@ awaitSend(&quot;queuePlateForManualCheckup&quot;, &quot;TollBooth/CustomerServic
 
 **Make sure the publish is successful before moving to the next step**
 
-1. In the portal, add the event grid subscription to the &quot;Process Image&quot; function
-  1. Event Schema: Event Grid Schema.
-  2. Topic Type : Storage Accounts.
-  3. Resource : your recently created Event Grid.
-  4. _Uncheck_ Subscribe to all event types, then select Blob Created from the event types dropdown list.
-  5. Leave Web Hook as the Endpoint Type.
+2. In the portal, add the event grid subscription to the &quot;Process Image&quot; function
+  * Event Schema: Event Grid Schema.
+  * Topic Type : Storage Accounts.
+  * Resource : your recently created Event Grid.
+  * _Uncheck_ Subscribe to all event types, then select Blob Created from the event types dropdown list.
+  * Leave Web Hook as the Endpoint Type.
 
 # Challenge 4 : Create Functions in the Portal
 
@@ -135,7 +135,7 @@ Create two new Azure Functions written in Node.js, using the Azure portal. These
 
 1. Navigate to the function app &quot;Events&quot;
 2. Create a function that is triggered by event grid (install extensions if prompted)
-  1. Name : SavePlateData
+  * Name : SavePlateData
 3. Replace the code with the following:
 
 module.exports=function (context, eventGridEvent) {
@@ -160,20 +160,20 @@ module.exports=function (context, eventGridEvent) {
 
 };
 
-1. Add an event grid subscription
-  1. Name should contain &quot;SAVE&quot;
-  2. Event Schema: Event Grid Schema.
-  3. Topic Type: Event Grid Topics.
-  4. Resource: your recently created Event Grid.
-  5. Ensure that Subscribe to all event types _is checked_. You will enter a custom event type later.
-  6. Leave Web Hook as the Endpoint Type.
-2. Add a Cosmos DB Output to the function (install extensions if needed)
-  1. Select the Cosmos DB account created earlier
-  2. Database Name : LicensePlates
-  3. Collection Name : Processed
-3. Create another function that is triggered by event grid
-  1. Name : QueuePlateForManualCheckup
-4. Replace the code with the following:
+4. Add an event grid subscription
+  * Name should contain &quot;SAVE&quot;
+  * Event Schema: Event Grid Schema.
+  * Topic Type: Event Grid Topics.
+  * Resource: your recently created Event Grid.
+  * Ensure that Subscribe to all event types _is checked_. You will enter a custom event type later.
+  * Leave Web Hook as the Endpoint Type.
+5. Add a Cosmos DB Output to the function (install extensions if needed)
+  * Select the Cosmos DB account created earlier
+  * Database Name : LicensePlates
+  * Collection Name : Processed
+6. Create another function that is triggered by event grid
+  * Name : QueuePlateForManualCheckup
+7. Replace the code with the following:
 
 module.exports=asyncfunction (context, eventGridEvent) {
 
@@ -197,31 +197,31 @@ module.exports=asyncfunction (context, eventGridEvent) {
 
 };
 
-1. Add an event grid subscription
-  1. Name should contain &quot;QUEUE&quot;
-  2. Event Schema: Event Grid Schema.
-  3. Topic Type: Event Grid Topics.
-  4. Resource: your recently created Event Grid.
-  5. Ensure that Subscribe to all event types _is checked_. You will enter a custom event type later.
-  6. Leave Web Hook as the Endpoint Type.
-2. Add a Cosmos DB Output to the QueuePlateForManualCheckup function
-  1. Select the Cosmos DB account created earlier
-  2. Database Name : LicensePlates
-  3. Collection Name : NeedsManualReview
-3. Navigate to your event grid topic
-4. Modify the &quot;SAVE&quot; subscription so it no longer subscribes to all events and add an event type named &quot;savePlateData&quot;.  _Note – If you changed this in the solution, you will have to make sure the name matches what was in the solution_
-5. Modify the &quot;QUEUE&quot; subscription so it no longer subscribes to all events and add an event type named &quot; **queuePlateForManualCheckup&quot;**.  _Note – If you changed this in the solution, you will have to make sure the name matches what was in the solution_
+8. Add an event grid subscription
+  * Name should contain &quot;QUEUE&quot;
+  * Event Schema: Event Grid Schema.
+  * Topic Type: Event Grid Topics.
+  * Resource: your recently created Event Grid.
+  * Ensure that Subscribe to all event types _is checked_. You will enter a custom event type later.
+  * Leave Web Hook as the Endpoint Type.
+9. Add a Cosmos DB Output to the QueuePlateForManualCheckup function
+  * Select the Cosmos DB account created earlier
+  * Database Name : LicensePlates
+  * Collection Name : NeedsManualReview
+10. Navigate to your event grid topic
+11. Modify the &quot;SAVE&quot; subscription so it no longer subscribes to all events and add an event type named &quot;savePlateData&quot;.  _Note – If you changed this in the solution, you will have to make sure the name matches what was in the solution_
+12. Modify the &quot;QUEUE&quot; subscription so it no longer subscribes to all events and add an event type named &quot; **queuePlateForManualCheckup&quot;**.  _Note – If you changed this in the solution, you will have to make sure the name matches what was in the solution_
 
 # Challenge 5 : Monitoring
 
 Application Insights can be integrated with Azure Function Apps to provide robust monitoring for your functions. In this exercise, you will provision a new Application Insights account and configure your Function Apps to send telemetry to it.
 
 1. Create an Application Insights resource
-  1. Name : Similar to TollboothMonitor
-  2. Application Type: ASP.NET web application
-  3. _Hint : Copy the instrumentation key_
+  * Name : Similar to TollboothMonitor
+  * Application Type: ASP.NET web application
+  * _Hint : Copy the instrumentation key_
 2. Add application insights to your &quot;App&quot; function app and &quot;Events&quot; function app
-  1. Name: APPINSIGHTS\_INSTRUMENTATIONKEY
+  * Name: APPINSIGHTS\_INSTRUMENTATIONKEY
 3. Open the Live Metrics Stream for the app insights in the &quot;App&quot; function app (may take a few minutes for App Insights to appear)
 4. Go back to the solution in Visual Studio.  Expand the UploadImages project and open the App.config.  Update the &quot;blobStorageConnection&quot; to the connection string for your blob storage account
 5. Start a new instance of the UploadImages project.  Press 1 in the console.
@@ -254,17 +254,17 @@ In this challenge, you will use the Azure Cosmos DB Data Explorer in the portal 
 In this exercise, you create a new Logic App for your data export workflow. This Logic App will execute periodically and call your ExportLicensePlates function, then conditionally send an email if there were no records to export.
 
 1. Create a logic app
-  1. Name : Similar to TollboothLogic
-  2. Make sure Log Analytics is Off
-  3. Trigger should be Recurrence, 15 minutes
+  * Name : Similar to TollboothLogic
+  * Make sure Log Analytics is Off
+  * Trigger should be Recurrence, 15 minutes
 2. Add an action to call your &quot;App&quot; function app function name ExportLicensePlates
 3. Add a condition control
-  1. Value : Status Code parameter
-  2. Operator : is equal to
-  3. Second value : 200
+  * Value : Status Code parameter
+  * Operator : is equal to
+  * Second value : 200
 4. Ignore the True condition
 5. In the False condition, send an O365 email
-  1. To : your email
-  2. Subject : enter something meaningful
-  3. Message Body : enter something here and include the status code value
+  * To : your email
+  * Subject : enter something meaningful
+  * Message Body : enter something here and include the status code value
 6. Save and Run
