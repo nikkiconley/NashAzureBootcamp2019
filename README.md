@@ -52,13 +52,13 @@ _HINT : Record names and keys_
     * Database ID &quot;LicensePlates&quot;
     * Leave **Provision database throughput** unchecked.
     * Collection ID &quot;Processed&quot;
-    * Partition key **: &quot;**** /licensePlateText&quot;**
+    * Partition key **: &quot;**/licensePlateText&quot;
     * 5000 throughput
   * Create a collection
     * Database ID &quot;LicensePlates&quot;
     * Leave **Provision database throughput** unchecked.
     * Collection ID &quot;NeedsManualReview&quot;
-    * Partition key **: &quot;**** /fileName&quot;**
+    * Partition key **: &quot;**/fileName&quot;
     * 5000 throughput
   * _Hint : copy the_ _read-write keys_ _for URI and Primary Key_
 7. Create a Computer Vision API service (S1 pricing tier)
