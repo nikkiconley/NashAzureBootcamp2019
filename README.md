@@ -36,8 +36,8 @@ _HINT : Record names and keys_
 
 1. Create a resource group
 2. Create a storage account (refer to this one as INIT)
-  * Create a container &quot;images&quot;
-  * Create a container &quot;export&quot;
+  * In the blobs, create a container &quot;images&quot;
+  * In the blobs, create a container &quot;export&quot;
 3. Create a function app (put &quot;App&quot; in the name)
   * For your tollbooth app, consumption plan, .NET runtime stack
   * Create new storage and disable application insights
@@ -118,7 +118,7 @@ awaitSend(&quot;queuePlateForManualCheckup&quot;, &quot;TollBooth/CustomerServic
 
 # Challenge 3 : Deployment
 
-1. Deploy the Tollbooth project to the &quot;App&quot; function app you created earlier
+1. Deploy the Tollbooth project to the &quot;App&quot; function app you created earlier.  Do not check the box to create a zip file
 
 **Make sure the publish is successful before moving to the next step**
 
